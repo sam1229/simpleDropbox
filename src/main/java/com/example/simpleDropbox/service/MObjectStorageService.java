@@ -9,8 +9,6 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,11 +41,11 @@ public class MObjectStorageService {
             }
 
             
-            MObject exisintgFile = mObjectRepository.findFirstByName(file.getOriginalFilename()).get();
-            if(exisintgFile != null) {
-                exisintgFile.setLastUpdated(LocalDateTime.now());
-                mObjectRepository.save(exisintgFile);
-            }
+            mObjectRepository.findFirstByName(file.getOriginalFilename())
+                .ifPresent(a -> {
+                    a.setLastUpdated(LocalDateTime.now());
+                    mObjectRepository.save(a);
+                });
 
             mObject.setLastUpdated(LocalDateTime.now());
             mObject.setTimeSaved(LocalDateTime.now());
